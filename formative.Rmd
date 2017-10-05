@@ -1,0 +1,81 @@
+---
+title: "formative"
+author: "Jiaxi Yang1992"
+date: "2017年10月5日"
+output: html_document
+---
+
+```{r}
+# Question 4
+
+D1<-read.csv("D:/Columbia/Doctor/2017 Autumn/EDM/Exam1/HMXPC13_DI_v2_5-14-14.csv",header=TRUE)
+
+# Question 5
+
+# DI represents for De-Identified variable for the original data. 
+
+# Question 6
+
+certified<-D1[D1$course_id=="HarvardX/CS50x/2012",]
+sum(certified$certified)
+# 1287 students who enrolled in HarvardX/CS50x recieved certification in 2012. 
+
+# Question 7
+
+registered<-D1[D1$start_time_DI=="2012-10-15",]  
+registered<-registered[registered$final_cc_cname_DI=="Colombia",]
+sum(registered$registered)
+# 35 students registered for HarvardX/CS50x from Columbia on October 15, 2012.
+
+# Question 8
+
+ls(D1)
+D2<-D1[,c("userid_DI","start_time_DI","final_cc_cname_DI")]
+D2<-D2[D2$final_cc_cname_DI=="United States",]
+D2<-D2[,c(1,2)]
+
+
+# Question 9
+
+D3old<-D1[,c("userid_DI","start_time_DI","registered")]
+D3old<-D3old[D3old$registered==1,]
+row<-levels(D1$userid_DI)
+column<-c("userid_DI",levels(D1$start_time_DI))
+D3<-data.frame(row,matrix(NA,nrow=length(row),ncol=length(column)))
+colnames(D3)<-column
+attach(D3old)
+D3order<-D3old[order(userid_DI,start_time_DI),]
+library(dplyr)
+library(tidyr)
+D3ordernew<-distinct(D3order)
+D3ordernewwide<-spread(D3ordernew,key=start_time_DI,value=registered)
+D3<-D3ordernewwide
+
+# Question 10
+
+D3<-D3[,-1]
+rownames(D3)<-row
+
+# Question 11
+
+M1<-as.matrix(D3)
+
+# Question 12
+
+M2<-t(M1)
+
+# Question 13
+
+M1[is.na(M1)]<-0
+M2[is.na(M2)]<-0
+M3<-M1%*%M2
+M3[M3!=0]<-"Yes"
+M3[M3=="0"]<-"No"
+
+# Question 14
+
+diag(M3)=NA
+
+
+
+```
